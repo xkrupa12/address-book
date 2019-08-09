@@ -20,15 +20,15 @@ class ContactsSeeder extends Seeder
 
                 factory(Address::class, random_int(1, 3))->create([
                     'contact_id' => $contact->getKey(),
-                ]);
+                ])->first()->update(['primary' => true]);
 
                 factory(PhoneNumber::class, random_int(1, 3))->create([
                     'contact_id' => $contact->getKey(),
-                ]);
+                ])->first()->update(['primary' => true]);
 
                 factory(Email::class, random_int(1, 3))->create([
                     'contact_id' => $contact->getKey(),
-                ]);
+                ])->first()->update(['primary' => true]);
             });
     }
 }
