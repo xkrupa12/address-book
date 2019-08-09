@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string name
+ * @property string surname
+ * @property string fullName
+ */
 class Contact extends Model
 {
     /**
@@ -64,5 +69,13 @@ class Contact extends Model
     public function address(): HasOne
     {
         return $this->hasOne(Address::class, 'contact_id')->where('primary', 1);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return $this->name . ' ' . $this->surname;
     }
 }
