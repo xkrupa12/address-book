@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factory;
 $factory->define(Address::class, function (Faker\Generator $faker) {
     return [
         'contact_id' => $faker->randomNumber(),
+        'title' => $faker->randomElement(['home', 'office', 'school', 'work', 'cabin', 'pub']),
         'street' => $faker->streetName,
         'street_number' => $faker->randomNumber(),
         'city' => $faker->city,
-        'zip' => $faker->postcode,
+        'postcode' => $faker->postcode,
+        'country' => $faker->country,
     ];
 });
 

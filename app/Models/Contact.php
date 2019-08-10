@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string name
  * @property string surname
  * @property string fullName
+ * @property Address address
+ * @property PhoneNumber phone
+ * @property Email email
  */
 class Contact extends Model
 {

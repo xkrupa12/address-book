@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factory;
 
 $factory->define(Contact::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
+        'name' => $faker->firstName,
         'surname' => $faker->lastName,
         'note' => $faker->paragraph,
     ];

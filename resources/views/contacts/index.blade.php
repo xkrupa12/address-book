@@ -1,8 +1,11 @@
 @extends ('layout')
 
 @section ('content')
-    <h1>My contacts</h1>
-    @foreach ($contacts as $contact)
-        <p>{{ $contact->fullName }}</p>
-    @endforeach
+
+    <h1 class="text-2xl">Contacts</h1>
+
+    <contact-list :contacts="{{ $contacts->toJson() }}" />
+    <div>
+        <a href="{{ route('contacts.create') }}" class="p-2 bg-purple-600 text-white rounded">Add new</a>
+    </div>
 @stop

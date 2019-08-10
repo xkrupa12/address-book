@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContact;
 use App\Repositories\ContactsRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ContactsController extends Controller
@@ -28,7 +28,7 @@ class ContactsController extends Controller
     public function index(): View
     {
         return view('contacts.index', [
-            'contacts' => $this->repository->get(),
+            'contacts' => $this->repository->get([], ['address', 'phoneNumber', 'email'])->sortBy('surname')->values(),
         ]);
     }
 
@@ -41,14 +41,12 @@ class ContactsController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param StoreContact $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreContact $request): RedirectResponse
     {
-        // store new contact
-        $contact = $this->repository->create($request->all());
-
+        $contact = $this->repository->create($request->only(['name', 'surname']));
         return redirect()->route('contacts.index')->with('success', $contact->fullName . ' has been saved');
     }
 
@@ -59,18 +57,20 @@ class ContactsController extends Controller
     public function edit(int $id): View
     {
         return view('contacts.edit', [
-            'contact' => $this->repository->findOrFail($id),
+            'contact' => $this->repository->findOrFail($id, ['addresses', 'phoneNumbers', 'emails']),
         ]);
     }
 
     /**
      * @param int $id
-     * @param Request $request
+     * @param StoreContact $request
      * @return RedirectResponse
      */
-    public function update(int $id, Request $request)
+    public function update(int $id, StoreContact $request)
     {
-        $this->repository->update($id, $request->all());
+        if (! $this->repository->update($id, $request->only(['name', 'surname']))) {
+            return redirect()->route('contacts.index')->with('error', 'Contact was not found');
+        }
 
         return redirect()->route('contacts.edit', ['id' => $id])->with('success', 'Changes have been saved');
     }
@@ -82,7 +82,6 @@ class ContactsController extends Controller
     public function delete(int $id): RedirectResponse
     {
         $this->repository->delete($id);
-
         return redirect()->route('contacts.index')->with('success', 'Contact has been deleted');
     }
 }

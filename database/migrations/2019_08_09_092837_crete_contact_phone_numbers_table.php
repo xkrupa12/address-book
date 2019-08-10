@@ -20,7 +20,7 @@ class CreteContactPhoneNumbersTable extends Migration
             $table->string('phone_number');
             $table->timestamps();
 
-            $table->foreign('contact_id')->references('id')->on('contacts');
+            $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
         });
     }
 

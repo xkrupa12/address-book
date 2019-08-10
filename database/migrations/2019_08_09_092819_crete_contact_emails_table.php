@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
 class CreteContactEmailsTable extends Migration
 {
     /**
@@ -20,7 +19,7 @@ class CreteContactEmailsTable extends Migration
             $table->string('email');
             $table->timestamps();
 
-            $table->foreign('contact_id')->references('id')->on('contacts');
+            $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
         });
     }
 
@@ -31,6 +30,6 @@ class CreteContactEmailsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('emails');
     }
 }
