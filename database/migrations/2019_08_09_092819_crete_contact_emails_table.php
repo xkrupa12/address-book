@@ -15,6 +15,7 @@ class CreteContactEmailsTable extends Migration
         Schema::create('emails', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('contact_id');
+            $table->string('title')->nullable();
             $table->boolean('primary')->default(0);
             $table->string('email');
             $table->timestamps();

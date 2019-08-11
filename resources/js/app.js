@@ -12,8 +12,11 @@ if (token) {
 
 import ContactList from "./components/ContactList";
 import AddressesList from "./components/AddressesList";
+import EmailsList from "./components/EmailsList";
+import PhoneNumbersList from "./components/PhoneNumbersList";
+import PersonalCard from "./components/PersonalCard";
 
 const app = new Vue({
     el: '#app',
-    components: { ContactList, AddressesList },
+    components: { ContactList, AddressesList, PersonalCard, EmailsList, PhoneNumbersList },
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreContact;
 use App\Repositories\ContactsRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -64,10 +65,16 @@ class ContactsController extends Controller
     /**
      * @param int $id
      * @param StoreContact $request
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function update(int $id, StoreContact $request)
+    public function update(int $id, StoreContact $request): JsonResponse
     {
+        if (! $this->repository->update($id, $request->only(['name', 'surname']))) {
+            return response()->json([], 400);
+        }
+
+        return response()->json([], 200);
+
         if (! $this->repository->update($id, $request->only(['name', 'surname']))) {
             return redirect()->route('contacts.index')->with('error', 'Contact was not found');
         }

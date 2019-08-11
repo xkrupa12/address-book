@@ -31,16 +31,21 @@ class ContactEmailsController extends Controller
     public function store(int $contactId, StoreEmail $request): JsonResponse
     {
         if ($request->get('primary')) {
-            $this->makeSecondary($contactId);
+            $this->setAllSecondary($contactId);
         }
 
-        $this->repository->create([
-            'contact_id' => $contactId,
-            'email' => $request->get('email'),
-            'primary' => $request->get('primary', 0)
-        ]);
+        try {
+            $email = $this->repository->create([
+                'contact_id' => $contactId,
+                'title' => $request->get('title'),
+                'email' => $request->get('email'),
+                'primary' => $request->get('primary', 0)
+            ]);
 
-        return response()->json([], 201);
+            return response()->json($email->getAttributes(), 201);
+        } catch (Exception $e) {
+            return response()->json([], 400);
+        }
     }
 
     /**
@@ -55,7 +60,7 @@ class ContactEmailsController extends Controller
             $email = $this->repository->firstOrFail(['contact_id' => $contactId, 'id' => $emailId]);
 
             if ($request->get('primary')) {
-                $this->makeSecondary($contactId);
+                $this->setAllSecondary($contactId);
             }
 
             $email->update($request->only(['email', 'primary']));
@@ -85,7 +90,7 @@ class ContactEmailsController extends Controller
      * @param int $contactId
      * @return int
      */
-    private function makeSecondary(int $contactId): int
+    private function setAllSecondary(int $contactId): int
     {
         return $this->repository->change(['contact_id' => $contactId], ['primary' => 0]);
     }

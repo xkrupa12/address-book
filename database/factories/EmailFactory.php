@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factory;
 $factory->define(Email::class, function (Faker\Generator $faker) {
     return [
         'contact_id' => $faker->randomNumber(),
+        'title' => $faker->randomElement(['personal', 'work']),
         'email' => $faker->safeEmail,
     ];
 });

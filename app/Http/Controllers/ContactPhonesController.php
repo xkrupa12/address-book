@@ -31,14 +31,23 @@ class ContactPhonesController extends Controller
     public function store(int $contactId, StorePhoneNumber $request): JsonResponse
     {
         if ($request->get('primary')) {
-            $this->makeSecondary($contactId);
+            $this->setAllSecondary($contactId);
         }
 
-        $this->repository->create([
-            'contact_id' => $contactId,
-            'phone_number' => $request->get('phone_number'),
-            'primary' => $request->get('primary', 0)
-        ]);
+        try {
+            $phone = $this->repository->create([
+                'contact_id' => $contactId,
+                'title' => $request->get('title'),
+                'phone_number' => $request->get('phone_number'),
+                'primary' => $request->get('primary', 0)
+            ]);
+
+            return response()->json($phone->getAttributes(), 201);
+        } catch (Exception $e) {
+            return response()->json([], 400);
+        }
+
+
 
         return response()->json([], 201);
     }
@@ -55,7 +64,7 @@ class ContactPhonesController extends Controller
             $phone = $this->repository->firstOrFail(['contact_id' => $contactId, 'id' => $phoneId]);
 
             if ($request->get('primary')) {
-                $this->makeSecondary($contactId);
+                $this->setAllSecondary($contactId);
             }
 
             $phone->update($request->only(['phone_number', 'primary']));
@@ -91,7 +100,7 @@ class ContactPhonesController extends Controller
      * @param int $contactId
      * @return int
      */
-    private function makeSecondary(int $contactId): int
+    private function setAllSecondary(int $contactId): int
     {
         return $this->repository->change(['contact_id' => $contactId], ['primary' => 0]);
     }

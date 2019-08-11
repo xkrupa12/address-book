@@ -16,6 +16,7 @@ class CreteContactPhoneNumbersTable extends Migration
         Schema::create('phone_numbers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('contact_id');
+            $table->string('title')->nullable();
             $table->boolean('primary')->default(0);
             $table->string('phone_number');
             $table->timestamps();
