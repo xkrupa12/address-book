@@ -3,6 +3,10 @@
         <div v-if="! edit" class="flex justify-between">
             <div class="flex-1">
                 <p class="text-2xl font-bold w-full">{{ fullName }}</p>
+
+                <form :action="'/contacts/' + contact.id + '/delete'" method="POST">
+                    <input type="submit" class="px-2 py-1 cursor-pointer bg-red-500 hover:bg-red-600 text-white rounded shadow" value="Delete">
+                </form>
             </div>
             <div>
                 <span class="ml-32 text-right text-sm text-gray-600 p-1 rounded bg-white cursor-pointer hover:bg-blue-100" @click="edit = true">edit</span>
@@ -39,7 +43,6 @@
 
         methods: {
             updateName() {
-                console.log('/contacts/' + this.contact.id);
                 axios.put('/contacts/' + this.contact.id, {
                     name: this.contact.name,
                     surname: this.contact.surname
@@ -50,7 +53,7 @@
                 }).catch(error => {
                     console.log(error);
                 })
-            }
+            },
         }
     }
 </script>

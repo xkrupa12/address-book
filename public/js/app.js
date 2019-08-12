@@ -1741,6 +1741,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AddressesList',
@@ -1751,7 +1783,15 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       primary: null,
-      addresses: storage.addresses
+      addresses: storage.addresses,
+      contact: storage.contact,
+      title: '',
+      street: '',
+      street_number: '',
+      city: '',
+      postcode: '',
+      country: '',
+      createMode: false
     };
   },
   mounted: function mounted() {
@@ -1763,16 +1803,41 @@ __webpack_require__.r(__webpack_exports__);
       this.primary = primaryAddresses[0].id;
     }
   },
+  methods: {
+    storeAddress: function storeAddress() {
+      var _this = this;
+
+      axios.post('/contacts/' + this.contact.id + '/addresses/create', {
+        title: this.title,
+        street: this.street,
+        street_number: this.street_number,
+        city: this.city,
+        postcode: this.postcode,
+        country: this.country
+      }).then(function (r) {
+        _this.addresses.push(r.data);
+
+        _this.street = '';
+        _this.street_number = '';
+        _this.city = '';
+        _this.postcode = '';
+        _this.country = '';
+        _this.createMode = false;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  },
   watch: {
     primary: function primary() {
-      var _this = this;
+      var _this2 = this;
 
       if (!this.addresses) {
         return;
       }
 
       var address = this.addresses.filter(function (a) {
-        return a.id === _this.primary;
+        return a.id === _this2.primary;
       })[0];
 
       if (!address || address.primary) {
@@ -1780,8 +1845,8 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       axios.post('/contacts/' + address.contact_id + '/addresses/' + address.id + '/set-primary').then(function (r) {
-        _this.addresses.forEach(function (a) {
-          a.primary = a.id === _this.primary;
+        _this2.addresses.forEach(function (a) {
+          a.primary = a.id === _this2.primary;
         });
       })["catch"](function (error) {
         console.log(error);
@@ -1872,6 +1937,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -1882,7 +1962,11 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      term: ''
+      term: '',
+      createMode: false,
+      name: '',
+      surname: '',
+      note: ''
     };
   },
   props: ['contacts'],
@@ -1899,6 +1983,24 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     updateTerm: function updateTerm(event) {
       this.term = event;
+    },
+    storeContact: function storeContact() {
+      var _this2 = this;
+
+      axios.post('/contacts/create', {
+        name: this.name,
+        surname: this.surname,
+        note: this.note
+      }).then(function (r) {
+        _this2.contacts.push(r.data);
+
+        _this2.name = '';
+        _this2.surname = '';
+        _this2.note = '';
+        _this2.createMode = false;
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   }
 });
@@ -1967,21 +2069,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'EmailsList',
   data: function data() {
     return {
+      contact: storage.contact,
       emails: storage.emails,
       title: '',
       email: '',
-      createForm: false
+      createMode: false
     };
   },
   methods: {
     remove: function remove(emailId) {
       var _this = this;
 
-      axios["delete"]('/contacts/' + this.emails[0].contact_id + '/emails/' + emailId).then(function (r) {
+      axios["delete"]('/contacts/' + this.contact.id + '/emails/' + emailId).then(function (r) {
         _this.emails = _this.emails.filter(function (e) {
           return e.id !== emailId;
         });
@@ -1990,16 +2095,16 @@ __webpack_require__.r(__webpack_exports__);
     addNew: function addNew() {
       var _this2 = this;
 
-      axios.post('/contacts/' + this.emails[0].contact_id + '/emails', {
+      axios.post('/contacts/' + this.contact.id + '/emails', {
         email: this.email,
         title: this.title,
-        contact_id: this.emails[0].contact_id
+        contact_id: this.contact.id
       }).then(function (response) {
         _this2.emails.push(response.data);
       })["catch"](function (e) {
         console.log(e);
       });
-      this.createForm = false;
+      this.createMode = false;
     }
   }
 });
@@ -2015,6 +2120,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
 //
 //
 //
@@ -2054,7 +2163,6 @@ __webpack_require__.r(__webpack_exports__);
     updateName: function updateName() {
       var _this = this;
 
-      console.log('/contacts/' + this.contact.id);
       axios.put('/contacts/' + this.contact.id, {
         name: this.contact.name,
         surname: this.contact.surname
@@ -2107,21 +2215,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'PhoneNumbersList',
   data: function data() {
     return {
+      contact: storage.contact,
       phones: storage.phones,
       title: '',
       phone_number: '',
-      createForm: false
+      createMode: false
     };
   },
   methods: {
     remove: function remove(phoneId) {
       var _this = this;
 
-      axios["delete"]('/contacts/' + this.phones[0].contact_id + '/phones/' + phoneId).then(function (r) {
+      axios["delete"]('/contacts/' + this.contact.id + '/phones/' + phoneId).then(function (r) {
         _this.phones = _this.phones.filter(function (e) {
           return e.id !== phoneId;
         });
@@ -2130,16 +2241,16 @@ __webpack_require__.r(__webpack_exports__);
     addNew: function addNew() {
       var _this2 = this;
 
-      axios.post('/contacts/' + this.phones[0].contact_id + '/phones', {
+      axios.post('/contacts/' + this.contact.id + '/phones', {
         phone_number: this.phone_number,
         title: this.title,
-        contact_id: this.phones[0].contact_id
+        contact_id: this.contact.id
       }).then(function (response) {
         _this2.phones.push(response.data);
       })["catch"](function (e) {
         console.log(e);
       });
-      this.createForm = false;
+      this.createMode = false;
     }
   }
 });
@@ -2655,7 +2766,7 @@ var render = function() {
     "div",
     {
       class: {
-        "border rounded shadow bg-white p-4 m-2 w-1/3 hover:bg-blue-100": true,
+        "border rounded shadow bg-white my-4 p-4 w-1/3 hover:bg-blue-100": true,
         "border-spiro": _vm.address.primary,
         "border-gray-300": !_vm.address.primary
       },
@@ -2715,24 +2826,219 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex" },
-    _vm._l(_vm.addresses, function(address) {
-      return _c("address-card", {
-        key: address.id,
-        attrs: { address: address },
-        model: {
-          value: _vm.primary,
-          callback: function($$v) {
-            _vm.primary = $$v
+  return _c("div", { staticClass: "mx-2 my-6" }, [
+    _c("h2", { staticClass: "text-bold text-xl" }, [_vm._v("Address")]),
+    _vm._v(" "),
+    _vm.addresses.length === 0
+      ? _c("div", [
+          _c("p", { staticClass: "font-bold italic text-red-500" }, [
+            _vm._v("There are no addresses associated with this contact")
+          ])
+        ])
+      : _c(
+          "div",
+          _vm._l(_vm.addresses, function(address) {
+            return _c("address-card", {
+              key: address.id,
+              attrs: { address: address },
+              model: {
+                value: _vm.primary,
+                callback: function($$v) {
+                  _vm.primary = $$v
+                },
+                expression: "primary"
+              }
+            })
+          }),
+          1
+        ),
+    _vm._v(" "),
+    !_vm.createMode
+      ? _c(
+          "button",
+          {
+            staticClass:
+              "p-2 bg-spiro hover:bg-spiro-darker rounded shadow text-white block shadow",
+            on: {
+              click: function($event) {
+                _vm.createMode = true
+              }
+            }
           },
-          expression: "primary"
-        }
-      })
-    }),
-    1
-  )
+          [_vm._v("\n        Add new contact\n    ")]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.createMode
+      ? _c("div", [
+          _c("div", { staticClass: "my-2" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.title,
+                  expression: "title"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: { type: "text", name: "title", placeholder: "Title" },
+              domProps: { value: _vm.title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.title = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "my-2" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.street,
+                  expression: "street"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: { type: "text", name: "street", placeholder: "Street" },
+              domProps: { value: _vm.street },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.street = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.street_number,
+                  expression: "street_number"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: {
+                type: "text",
+                name: "street_number",
+                placeholder: "Street number"
+              },
+              domProps: { value: _vm.street_number },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.street_number = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "my-2" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.city,
+                  expression: "city"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: { type: "text", name: "city", placeholder: "City" },
+              domProps: { value: _vm.city },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.city = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.postcode,
+                  expression: "postcode"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: { type: "text", name: "postcode", placeholder: "Zip" },
+              domProps: { value: _vm.postcode },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.postcode = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.country,
+                  expression: "country"
+                }
+              ],
+              staticClass: "mr-2 p-2 bg-white border border-gray-300",
+              attrs: { type: "text", name: "country", placeholder: "Country" },
+              domProps: { value: _vm.country },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.country = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "p-2 bg-spiro hover:bg-spiro-darker rounded shadow text-white shadow",
+              on: { click: _vm.storeAddress }
+            },
+            [_vm._v("Save")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "p-2 bg-white hover:bg-gray-300 rounded shadow text-spiro shadow",
+              on: {
+                click: function($event) {
+                  _vm.createMode = false
+                }
+              }
+            },
+            [_vm._v("Cancel")]
+          )
+        ])
+      : _vm._e()
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -2868,7 +3174,131 @@ var render = function() {
           key: contact.id,
           attrs: { contact: contact }
         })
-      })
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "mx-1 my-4" }, [
+        !_vm.createMode
+          ? _c(
+              "button",
+              {
+                staticClass:
+                  "p-2 bg-spiro hover:bg-spiro-darker rounded shadow text-white",
+                on: {
+                  click: function($event) {
+                    _vm.createMode = true
+                  }
+                }
+              },
+              [_vm._v("\n            Add new contact\n        ")]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.createMode
+          ? _c("div", {}, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.name,
+                    expression: "name"
+                  }
+                ],
+                staticClass: "mr-2 p-2 bg-white border border-gray-300",
+                attrs: {
+                  type: "text",
+                  name: "name",
+                  placeholder: "First name"
+                },
+                domProps: { value: _vm.name },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.name = $event.target.value
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.surname,
+                    expression: "surname"
+                  }
+                ],
+                staticClass: "mr-2 p-2",
+                attrs: {
+                  type: "text",
+                  name: "surname",
+                  placeholder: "Last name"
+                },
+                domProps: { value: _vm.surname },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.surname = $event.target.value
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.note,
+                    expression: "note"
+                  }
+                ],
+                staticClass: "mr-2 p-2",
+                attrs: {
+                  type: "text",
+                  name: "note",
+                  placeholder: "Short note"
+                },
+                domProps: { value: _vm.note },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.note = $event.target.value
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "p-2 bg-spiro hover:bg-spiro-darker rounded shadow text-white",
+                  on: { click: _vm.storeContact }
+                },
+                [_vm._v("Save")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "p-2 bg-white hover:bg-gray-300 rounded shadow text-spiro",
+                  on: {
+                    click: function($event) {
+                      _vm.createMode = false
+                    }
+                  }
+                },
+                [_vm._v("Cancel")]
+              )
+            ])
+          : _vm._e()
+      ])
     ],
     2
   )
@@ -2931,7 +3361,9 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "mx-2 my-6" }, [
+    _c("h2", { staticClass: "text-bold text-xl" }, [_vm._v("Emails")]),
+    _vm._v(" "),
     _c(
       "ul",
       _vm._l(_vm.emails, function(email) {
@@ -2961,7 +3393,7 @@ var render = function() {
       0
     ),
     _vm._v(" "),
-    !_vm.createForm
+    !_vm.createMode
       ? _c(
           "button",
           {
@@ -2969,7 +3401,7 @@ var render = function() {
               "p-2 bg-spiro text-white rounded shadow hover:bg-spiro-darker",
             on: {
               click: function($event) {
-                _vm.createForm = true
+                _vm.createMode = true
               }
             }
           },
@@ -2977,7 +3409,7 @@ var render = function() {
         )
       : _vm._e(),
     _vm._v(" "),
-    _vm.createForm
+    _vm.createMode
       ? _c("div", [
           _c("h3", { staticClass: "m-2 font-bold" }, [
             _vm._v("Add new email:")
@@ -3043,6 +3475,20 @@ var render = function() {
               on: { click: _vm.addNew }
             },
             [_vm._v("Add")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "p-2 bg-white hover:bg-gray-300 rounded shadow text-spiro",
+              on: {
+                click: function($event) {
+                  _vm.createMode = false
+                }
+              }
+            },
+            [_vm._v("Cancel")]
           )
         ])
       : _vm._e()
@@ -3076,7 +3522,24 @@ var render = function() {
           _c("div", { staticClass: "flex-1" }, [
             _c("p", { staticClass: "text-2xl font-bold w-full" }, [
               _vm._v(_vm._s(_vm.fullName))
-            ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "form",
+              {
+                attrs: {
+                  action: "/contacts/" + _vm.contact.id + "/delete",
+                  method: "POST"
+                }
+              },
+              [
+                _c("input", {
+                  staticClass:
+                    "px-2 py-1 cursor-pointer bg-red-500 hover:bg-red-600 text-white rounded shadow",
+                  attrs: { type: "submit", value: "Delete" }
+                })
+              ]
+            )
           ]),
           _vm._v(" "),
           _c("div", [
@@ -3187,7 +3650,9 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "mx-2 my-6" }, [
+    _c("h2", { staticClass: "text-bold text-xl" }, [_vm._v("Phone numbers")]),
+    _vm._v(" "),
     _c(
       "ul",
       _vm._l(_vm.phones, function(phone) {
@@ -3217,7 +3682,7 @@ var render = function() {
       0
     ),
     _vm._v(" "),
-    !_vm.createForm
+    !_vm.createMode
       ? _c(
           "button",
           {
@@ -3225,7 +3690,7 @@ var render = function() {
               "p-2 bg-spiro text-white rounded shadow hover:bg-spiro-darker",
             on: {
               click: function($event) {
-                _vm.createForm = true
+                _vm.createMode = true
               }
             }
           },
@@ -3233,7 +3698,7 @@ var render = function() {
         )
       : _vm._e(),
     _vm._v(" "),
-    _vm.createForm
+    _vm.createMode
       ? _c("div", [
           _c("h3", { staticClass: "m-2 font-bold" }, [
             _vm._v("Add new phone number:")
@@ -3301,6 +3766,20 @@ var render = function() {
               on: { click: _vm.addNew }
             },
             [_vm._v("Add")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "p-2 bg-white hover:bg-gray-300 rounded shadow text-spiro",
+              on: {
+                click: function($event) {
+                  _vm.createMode = false
+                }
+              }
+            },
+            [_vm._v("Cancel")]
           )
         ])
       : _vm._e()

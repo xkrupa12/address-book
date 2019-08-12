@@ -16,6 +16,7 @@ $router->group(['prefix' => 'contacts'], function (Router $router) {
     $router->get('{id}', [ContactsController::class, 'edit'])->name('contacts.edit');
     $router->put('{id}', [ContactsController::class, 'update'])->name('contacts.update');
     $router->delete('{id}', [ContactsController::class, 'delete'])->name('contacts.delete');
+    $router->post('{id}/delete', [ContactsController::class, 'delete'])->name('contacts.alt-delete');
 
     $router->post('{contactId}/emails', [ContactEmailsController::class, 'store'])->name('contacts.emails.store');
     $router->patch('{contactId}/emails/{emailId}', [ContactEmailsController::class, 'update'])->name('contacts.emails.update');
@@ -25,6 +26,8 @@ $router->group(['prefix' => 'contacts'], function (Router $router) {
     $router->patch('{contactId}/phones/{phoneId}', [ContactPhonesController::class, 'update'])->name('contacts.phones.update');
     $router->delete('{contactId}/phones/{phoneId}', [ContactPhonesController::class, 'delete'])->name('contacts.phones.delete');
 
+    $router->post('{contactId}/addresses/create', [ContactAddressesController::class, 'store'])
+        ->name('contacts.addresses.store');
     $router->post('{contactId}/addresses/{addressId}/set-primary', [ContactAddressesController::class, 'setPrimary'])
         ->name('contacts.phones.store');
 

@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div class="mx-2 my-6">
+        <h2 class="text-bold text-xl">Phone numbers</h2>
         <ul>
             <li class="m-2" v-for="phone in phones" :key="phone.id">
                 {{ phone.phone_number }} ({{ phone.title }})
@@ -7,11 +8,11 @@
             </li>
         </ul>
 
-        <button @click="createForm = true" v-if="! createForm"  class="p-2 bg-spiro text-white rounded shadow hover:bg-spiro-darker">
+        <button @click="createMode = true" v-if="! createMode"  class="p-2 bg-spiro text-white rounded shadow hover:bg-spiro-darker">
             Add new phone number
         </button>
 
-        <div v-if="createForm">
+        <div v-if="createMode">
             <h3 class="m-2 font-bold">Add new phone number:</h3>
             <div class="m-2">
                 <label for="title">Title: </label>
@@ -22,6 +23,7 @@
                 <input class="p-1 border border-gray-300" type="text" name="phone_number" id="phone_number" v-model="phone_number">
             </div>
             <button @click="addNew" class="p-2 bg-spiro text-white rounded shadow hover:bg-spiro-darker">Add</button>
+            <button @click="createMode = false" class="p-2 bg-white hover:bg-gray-300 rounded shadow text-spiro">Cancel</button>
         </div>
     </div>
 </template>
@@ -32,33 +34,34 @@
 
         data() {
             return {
+                contact: storage.contact,
                 phones: storage.phones,
                 title: '',
                 phone_number: '',
-                createForm: false,
+                createMode: false,
             }
         },
 
         methods: {
             remove(phoneId) {
-                axios.delete('/contacts/' + this.phones[0].contact_id + '/phones/' + phoneId)
+                axios.delete('/contacts/' + this.contact.id + '/phones/' + phoneId)
                     .then(r => {
                         this.phones = this.phones.filter(e => e.id !== phoneId);
                     });
             },
 
             addNew() {
-                axios.post('/contacts/' + this.phones[0].contact_id + '/phones', {
+                axios.post('/contacts/' + this.contact.id + '/phones', {
                     phone_number: this.phone_number,
                     title: this.title,
-                    contact_id: this.phones[0].contact_id
+                    contact_id: this.contact.id
                 }).then(response => {
                     this.phones.push(response.data);
                 }).catch(e => {
                     console.log(e);
                 })
 
-                this.createForm = false;
+                this.createMode = false;
             },
         }
     }

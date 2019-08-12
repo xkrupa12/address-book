@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreContact;
 use App\Repositories\ContactsRepository;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -43,12 +44,17 @@ class ContactsController extends Controller
 
     /**
      * @param StoreContact $request
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function store(StoreContact $request): RedirectResponse
+    public function store(StoreContact $request): JsonResponse
     {
-        $contact = $this->repository->create($request->only(['name', 'surname']));
-        return redirect()->route('contacts.index')->with('success', $contact->fullName . ' has been saved');
+        try {
+            $contact = $this->repository->create($request->only(['name', 'surname', 'note']));
+            return response()->json($contact, 201);
+        } catch (Exception $e) {
+            return response()->json([], 400);
+        }
+
     }
 
     /**
@@ -69,17 +75,11 @@ class ContactsController extends Controller
      */
     public function update(int $id, StoreContact $request): JsonResponse
     {
-        if (! $this->repository->update($id, $request->only(['name', 'surname']))) {
+        if (! $this->repository->update($id, $request->only(['name', 'surname', 'note']))) {
             return response()->json([], 400);
         }
 
         return response()->json([], 200);
-
-        if (! $this->repository->update($id, $request->only(['name', 'surname']))) {
-            return redirect()->route('contacts.index')->with('error', 'Contact was not found');
-        }
-
-        return redirect()->route('contacts.edit', ['id' => $id])->with('success', 'Changes have been saved');
     }
 
     /**
